@@ -31,7 +31,7 @@ Each MCQ should:
 
     try {
         const response = await axios.post(
-            "http://127.0.0.1:11434/api/generate", 
+            "http://127.0.0.1:11434/v1/chat/completions", 
             {
                 model: "qwen2.5:1.5b",
                 prompt: prompt,
