@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto=require('crypto');
 
-const API_KEY = process.env.DEEPSEEK_API_KEY;
+const API_KEY = process.env.GEMINI_API_KEY;
 
 async function generateMCQs(numq,text) {
     // Hardcoded prompt template
@@ -33,7 +33,7 @@ Each MCQ should:
 
     try {
         const response = await axios.post(
-            "https://api.deepseek.com/v1/chat/completions", 
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, 
             {
                 model: "deepseek-chat",
                 messages: [{ role: "user", content: prompt }],
