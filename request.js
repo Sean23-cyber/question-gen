@@ -49,7 +49,8 @@ Each MCQ should:
         );
 
         // Extract JSON string from response
-        const jsonString = response.data.response;
+ const jsonString = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
+
         
         // Check if JSON response exists
         if (!jsonString || typeof jsonString !== "string") {
