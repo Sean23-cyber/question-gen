@@ -35,18 +35,17 @@ Each MCQ should:
         const response = await axios.post(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, 
             {
-                model: "deepseek-chat",
-                messages: [{ role: "user", content: prompt }],
-                max_tokens: 1024,
-                temperature: 0.7
-              
+               
+                contents: [{ role: "user", content: prompt }]
+                
             },
             {
        headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer sk-97fd62652da543428f36073891590366`
+          
         }
-    }
+            }
+    
         );
 
         // Extract JSON string from response
