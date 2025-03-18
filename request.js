@@ -37,7 +37,12 @@ Each MCQ should:
                 prompt: prompt,
                 stream: false,
               
-            }
+            },
+            {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
         );
 
         // Extract JSON string from response
