@@ -36,8 +36,9 @@ Each MCQ should:
             "https://api.deepseek.com/v1/chat/completions", 
             {
                 model: "deepseek-chat",
-                prompt: prompt,
-                stream: false,
+                messages: [{ role: "user", content: prompt }],
+                max_tokens: 1024,
+                temperature: 0.7
               
             },
             {
