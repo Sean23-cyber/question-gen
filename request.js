@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const crypto=require('crypto');
 
+const API_KEY = "sk-97fd62652da543428f36073891590366";
+
 async function generateMCQs(numq,text) {
     // Hardcoded prompt template
     const prompt = `Generate exactly ${numq} multiple-choice questions (MCQs) based on the following text.Strictly follow ${numq}.
@@ -31,9 +33,9 @@ Each MCQ should:
 
     try {
         const response = await axios.post(
-            "http://127.0.0.1:11434/v1/chat/completions", 
+            "https://api.deepseek.com/v1/chat/completions", 
             {
-                model: "qwen2.5:1.5b",
+                model: "deepseek-chat",
                 prompt: prompt,
                 stream: false,
               
