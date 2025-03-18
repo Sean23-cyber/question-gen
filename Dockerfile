@@ -14,4 +14,4 @@ COPY . .
 EXPOSE 8080 11434
 
 # Start Ollama and the Node.js app
-CMD ollama run qwen2.5:1.5b & ollama serve & npm start
+CMD ollama serve & node server.js
