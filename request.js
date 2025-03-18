@@ -36,7 +36,7 @@ Each MCQ should:
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, 
             {
                
-                contents: [{ role: "user", content: prompt }]
+               contents: [{ role: "user", parts: [{ text: prompt }] }]
                 
             },
             {
