@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrieve MCQs</title>
+</head>
+<body>
+    <h2>Retrieve Generated MCQs</h2>
+
+    <form action="http://localhost:3001/get-mcq" method="post">
+        <label for="id">Session ID:</label>
+        <input type="text" id="id" name="Id" required>
+        <br><br>
+
+        <label for="pwd">Password:</label>
+        <input type="text" id="pwd" name="Pwd" required>
+        <br><br>
+
+        <input type="submit" value="Get MCQs">
+    </form>
+
+</body>
+</html>
