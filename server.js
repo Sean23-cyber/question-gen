@@ -26,6 +26,7 @@ let text="";
 try{
 
     console.log("📢 Received request to generate MCQs.");
+    console.log("🛠️ req.body:", req.body);
 
 if (req.file) {
     const dataBuffer = fs.readFileSync(req.file.path);
@@ -43,6 +44,7 @@ let numq=parseInt(req.body.numq,10);
 if (isNaN(numq) || numq <= 0) {
     numq = 10;
 }
+console.log("🔢 Number of MCQs:", numq);
 
 
 const mcqs = await generateMCQs(numq,text);
