@@ -13,6 +13,7 @@ COPY package-lock.json .
 
 # Install dependencies
 RUN npm install
+RUN npm install openai
 
 # Copy the rest of the application code
 COPY . .
