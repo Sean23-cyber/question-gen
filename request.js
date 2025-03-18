@@ -31,7 +31,7 @@ Each MCQ should:
 
     try {
         const response = await axios.post(
-            "http://localhost:11434/api/generate", 
+            "http://localhost:8080/api/generate", 
             {
                 model: "qwen2.5:1.5b",
                 prompt: prompt,
