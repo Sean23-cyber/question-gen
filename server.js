@@ -19,6 +19,7 @@ app.use(express.json());
 const sessions = {};
 
 app.post("/generate-mcq",upload.single("file"),async(req,res)=>{
+const upload = multer();
 
 let text="";
 
