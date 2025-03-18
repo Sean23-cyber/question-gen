@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto=require('crypto');
 
-const API_KEY = "sk-97fd62652da543428f36073891590366";
+const API_KEY = process.env.DEEPSEEK_API_KEY;
 
 async function generateMCQs(numq,text) {
     // Hardcoded prompt template
