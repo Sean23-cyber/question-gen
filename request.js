@@ -42,8 +42,9 @@ Each MCQ should:
               
             },
             {
-        headers: {
-            "Content-Type": "application/json"
+       headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer YOUR_DEEPSEEK_API_KEY`
         }
     }
         );
