@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto=require('crypto');
 
-async function generateMCQs(text) {
+async function generateMCQs(numq,text) {
     // Hardcoded prompt template
     const prompt = `Generate exactly ${numq} multiple-choice questions (MCQs) based on the following text.Strictly follow ${numq}.
 Return a properly formatted JSON array with exactly ${numq} MCQs—no more, no less. No explanations.
