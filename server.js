@@ -86,7 +86,21 @@ app.post("/get-mcq", (req, res) => {
     res.json({ mcqs: result.mcqs });
 });
 
+app.post("/replace-q",(req,res)=>{
+    const{Id,Pwd,index}=req.body;
+    const result=validateSession(Id,Pwd,sessions);
+    if(result.error){
+return res.status(403).json({error:result.error});
+}
 
+    let mcqs=result.mcqs;
+    if(index<0 || index>=mcqss.lenght){
+return res.status(400).json({error:"invalid question index"});
+    }
+    const newq=(await generateMCQs(1, "New context for question"))[0];
+     mcqs[index] = newq;
+    res.json({mcqs});
+});
 
 
 const port=process.env.PORT||8080;
