@@ -86,7 +86,7 @@ app.post("/get-mcq", (req, res) => {
     res.json({ mcqs: result.mcqs });
 });
 
-app.post("/replace-q",(req,res)=>{
+app.post("/replace-q",async(req,res)=>{
     const{Id,Pwd,index}=req.body;
     const result=validateSession(Id,Pwd,sessions);
     if(result.error){
