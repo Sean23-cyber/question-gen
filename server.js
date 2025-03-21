@@ -87,18 +87,13 @@ app.post("/get-mcq", (req, res) => {
 });
 
 app.post("/replace-q", async (req, res) => {
-    const { Id, index, Pwd } = req.body;
+    const { Id, index } = req.body;
 
     if (!sessions[Id]) {
         return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    // Optional: Verify Password (if required)
-    if (sessions[Id].password && sessions[Id].password !== Pwd) {
-        return res.status(403).json({ error: "Invalid password" });
-    }
-
-    if (!Array.isArray(sessions[Id].mcqs) || sessions[Id].mcqs.length === 0) {
+    if (!Array.isArray(sessions[Id].mcqs)) {
         return res.status(400).json({ error: "MCQ data missing" });
     }
 
@@ -111,20 +106,18 @@ app.post("/replace-q", async (req, res) => {
     try {
         // Request a new question
         const response = await generateMCQs(1, sessions[Id].mcqs[index].question);
-        const { mcqs } = response || {};
-
-        if (!mcqs || mcqs.length === 0) {
+        if (!response || !response.mcqs || response.mcqs.length === 0) {
             throw new Error("Failed to generate a valid MCQ");
         }
 
         // Replace old question
-        sessions[Id].mcqs[index] = mcqs[0];
-        console.log("✅ Question replaced successfully.");
+        sessions[Id].mcqs[index] = response.mcqs[0];
+        console.log("Question replaced successfully.");
 
         res.json({ mcqs: sessions[Id].mcqs });
     } catch (error) {
-        console.error("Error replacing MCQ:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error replacing question:", error.message);
+        res.status(500).json({ error: "Failed to replace question. Try again later." });
     }
 });
 
