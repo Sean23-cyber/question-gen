@@ -114,46 +114,52 @@ app.post("/replace-q", async (req, res) => {
 
         console.log(`🔄 Replacing question at index ${index} for session ${Id}...`);
 
-        const existingMCQs = sessions[Id].mcqs.mcqs.map(mcq => ({
-            question: mcq.question.trim().toLowerCase(),
-            options: mcq.options.map(opt => opt.trim().toLowerCase()).sort()
-        }));
-
-        let newMCQ = null;
         let attempts = 0;
         const maxAttempts = 5;
+        let newMCQ = null;
 
         while (attempts < maxAttempts) {
             const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question);
+            
+            console.log("🔍 Raw Response from Gemini:", response);  // Debugging Log
 
-            if (!response || !response.mcqs || response.mcqs.length === 0) {
-                console.log("❌ Gemini API did not return a valid MCQ.");
-                return res.status(500).json({ error: "Failed to generate a new MCQ" });
+            // Validate response structure
+            if (!response || !response.mcqs || !Array.isArray(response.mcqs) || response.mcqs.length === 0) {
+                console.log("❌ Invalid MCQ response. Retrying...");
+                attempts++;
+                continue;
             }
 
             newMCQ = response.mcqs[0];
-            const newQuestion = newMCQ.question.trim().toLowerCase();
-            const newOptions = newMCQ.options.map(opt => opt.trim().toLowerCase()).sort();
 
-            // Check uniqueness in both question and options
-            const isDuplicate = existingMCQs.some(mcq =>
-                mcq.question === newQuestion && JSON.stringify(mcq.options) === JSON.stringify(newOptions)
-            );
+            // Validate MCQ structure
+            if (!newMCQ || typeof newMCQ.question !== "string" || !Array.isArray(newMCQ.options)) {
+                console.log("❌ New MCQ is invalid:", newMCQ);
+                attempts++;
+                continue;
+            }
 
-            if (!isDuplicate) break;
+            // Ensure options is an array
+            newMCQ.options = Array.isArray(newMCQ.options) ? newMCQ.options : [];
 
-            console.log(`⚠️ Duplicate MCQ detected. Retrying... (${attempts + 1}/${maxAttempts})`);
-            attempts++;
+            if (newMCQ.options.length === 0) {
+                console.log("⚠️ New MCQ has no options. Retrying...");
+                attempts++;
+                continue;
+            }
+
+            break;
         }
 
         if (attempts >= maxAttempts) {
-            console.log("❌ Could not generate a fully unique MCQ after multiple attempts.");
-            return res.status(500).json({ error: "Failed to generate a unique MCQ" });
+            console.log("❌ Failed to generate a valid MCQ after multiple attempts.");
+            return res.status(500).json({ error: "Failed to generate a valid MCQ" });
         }
 
         console.log(`✅ Old Question: "${sessions[Id].mcqs.mcqs[index].question}"`);
         console.log(`✅ New Question: "${newMCQ.question}"`);
 
+        // Replace old question
         sessions[Id].mcqs.mcqs[index] = newMCQ;
 
         res.json({ mcqs: sessions[Id].mcqs.mcqs });
