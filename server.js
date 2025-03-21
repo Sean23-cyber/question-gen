@@ -90,24 +90,20 @@ app.post("/replace-q", async (req, res) => {
     try {
         const { Id, index, Pwd } = req.body;
 
-        // Validate session existence
         if (!sessions[Id]) {
             console.log("❌ Invalid session ID:", Id);
             return res.status(400).json({ error: "Invalid session ID" });
         }
 
-        // Validate password
         if (sessions[Id].Pwd && sessions[Id].Pwd !== Pwd) {
             console.log("❌ Incorrect password for ID:", Id);
             return res.status(403).json({ error: "Invalid password" });
         }
 
-        // Ensure MCQs exist
         if (!sessions[Id].mcqs || !Array.isArray(sessions[Id].mcqs.mcqs) || sessions[Id].mcqs.mcqs.length === 0) {
             return res.status(400).json({ error: "MCQ data missing" });
         }
 
-        // Validate index
         if (index < 0 || index >= sessions[Id].mcqs.mcqs.length) {
             return res.status(400).json({ error: "Invalid index" });
         }
@@ -121,30 +117,33 @@ app.post("/replace-q", async (req, res) => {
         while (attempts < maxAttempts) {
             const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question);
             
-            console.log("🔍 Raw Response from Gemini:", response);  // Debugging Log
+            console.log("🔍 Raw Response from Gemini:", response);  
 
-            // Validate response structure
             if (!response || !response.mcqs || !Array.isArray(response.mcqs) || response.mcqs.length === 0) {
                 console.log("❌ Invalid MCQ response. Retrying...");
                 attempts++;
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Prevents hitting API too fast
                 continue;
             }
 
             newMCQ = response.mcqs[0];
 
-            // Validate MCQ structure
-            if (!newMCQ || typeof newMCQ.question !== "string" || !Array.isArray(newMCQ.options)) {
+            if (!newMCQ || typeof newMCQ.question !== "string" || !newMCQ.options) {
                 console.log("❌ New MCQ is invalid:", newMCQ);
                 attempts++;
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 continue;
             }
 
-            // Ensure options is an array
-            newMCQ.options = Array.isArray(newMCQ.options) ? newMCQ.options : [];
+            // **Fix:** Convert options from object to array if necessary
+            if (!Array.isArray(newMCQ.options)) {
+                newMCQ.options = Object.values(newMCQ.options || {});
+            }
 
-            if (newMCQ.options.length === 0) {
-                console.log("⚠️ New MCQ has no options. Retrying...");
+            if (newMCQ.options.length < 2) {
+                console.log("⚠️ New MCQ has insufficient options. Retrying...");
                 attempts++;
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 continue;
             }
 
@@ -156,12 +155,9 @@ app.post("/replace-q", async (req, res) => {
             return res.status(500).json({ error: "Failed to generate a valid MCQ" });
         }
 
-        console.log(`✅ Old Question: "${sessions[Id].mcqs.mcqs[index].question}"`);
-        console.log(`✅ New Question: "${newMCQ.question}"`);
+        console.log(`✅ Replaced MCQ at index ${index}: "${newMCQ.question}"`);
 
-        // Replace old question
         sessions[Id].mcqs.mcqs[index] = newMCQ;
-
         res.json({ mcqs: sessions[Id].mcqs.mcqs });
 
     } catch (error) {
