@@ -95,7 +95,7 @@ app.post("/replace-q", async (req, res) => {
 
     console.log(🔄 Replacing question at index ${index}...);
 
-    const newq = (await generateMCQs(1, sessions[Id].mcqs.mcqs[index].question)).mcqs[0];
+    const newq = (await generateMCQs(1, sessions[Id].mcqs[index].question)).mcqs[0];
     sessions[Id].mcqs.mcqs[index] = newq;
     
     console.log("✅ Question replaced successfully.");
