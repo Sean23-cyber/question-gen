@@ -97,8 +97,16 @@ return res.status(403).json({error:result.error});
     if(index<0 || index>=mcqs.length){
 return res.status(400).json({error:"invalid question index"});
     }
-    const newq=(await generateMCQs(1, "New context for question"))[0];
+    const newq=(await generateMCQs(1, "New context for question")).mcqs[0];
      mcqs[index] = newq;
+    sessions[Id].mcqs=mcqs;
+
+   const filePath = `test/test_${Id}.json`;
+        fs.writeFileSync(filePath, JSON.stringify({ Id, Pwd, mcqs }, null, 4), "utf8");
+      console.log(`✅ Updated MCQs saved to ${filePath}`);
+
+
+    
     res.json({mcqs});
 });
 
