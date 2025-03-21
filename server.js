@@ -97,14 +97,15 @@ app.post("/replace-q", async (req, res) => {
         }
 
         // Optional password check
-        if (sessions[Id].Pwd && sessions[Id].Pwd !== Pwd) {
-    return res.status(403).json({ error: "Invalid password" });
-}
+        if (sessions[Id].password && sessions[Id].password !== Pwd) {
+            console.log("❌ Incorrect password for ID:", Id);
+            return res.status(403).json({ error: "Invalid password" });
+        }
 
         // Ensure MCQs exist
-        if (!sessions[Id].mcqs || !Array.isArray(sessions[Id].mcqs.mcqs) || sessions[Id].mcqs.mcqs.length === 0) {
-    return res.status(400).json({ error: "MCQ data missing" });
-}
+        if (!Array.isArray(sessions[Id].mcqs) || sessions[Id].mcqs.length === 0) {
+            return res.status(400).json({ error: "MCQ data missing" });
+        }
 
         // Validate index
         if (index < 0 || index >= sessions[Id].mcqs.length) {
@@ -113,27 +114,44 @@ app.post("/replace-q", async (req, res) => {
 
         console.log(`Replacing question at index ${index} for session ${Id}...`);
 
-        // Request new question from Gemini
-        const response = await generateMCQs(1, sessions[Id].mcqs[index]?.question);
-        
-        // Validate response
-        if (!response || !response.mcqs || response.mcqs.length === 0) {
-            console.log("❌ Gemini API did not return a valid MCQ.");
-            return res.status(500).json({ error: "Failed to generate a new MCQ" });
-        }
+        // Extract current MCQs to check for uniqueness
+        const existingQuestions = sessions[Id].mcqs.map(mcq => mcq.question.toLowerCase());
 
-        // Replace the old question
-        sessions[Id].mcqs.mcqs[index] = response.mcqs[0];
-        console.log("✅ Question replaced successfully.");
+        let newMCQ;
+        let attempts = 0;
+        const maxAttempts = 5; // Prevent infinite loops
 
-        res.json({ mcqs: sessions[Id].mcqs.mcqs });
+        do {
+            // Request new question from Gemini
+            const response = await generateMCQs(1, sessions[Id].mcqs[index]?.question);
+
+            // Validate response
+            if (!response || !response.mcqs || response.mcqs.length === 0) {
+                console.log("❌ Gemini API did not return a valid MCQ.");
+                return res.status(500).json({ error: "Failed to generate a new MCQ" });
+            }
+
+            newMCQ = response.mcqs[0];
+
+            attempts++;
+            if (attempts >= maxAttempts) {
+                console.log("⚠️ Could not generate a unique MCQ after multiple attempts.");
+                return res.status(500).json({ error: "Failed to generate a unique MCQ" });
+            }
+
+        } while (existingQuestions.includes(newMCQ.question.toLowerCase())); // Retry if duplicate
+
+        // Replace the old question with the new unique one
+        sessions[Id].mcqs[index] = newMCQ;
+        console.log("✅ Question replaced successfully with a unique MCQ.");
+
+        res.json({ mcqs: sessions[Id].mcqs });
 
     } catch (error) {
         console.error("❌ Error replacing MCQ:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
 
 
 const port=process.env.PORT||8080;
