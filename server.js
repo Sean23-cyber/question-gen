@@ -86,21 +86,7 @@ app.post("/get-mcq", (req, res) => {
     res.json({ mcqs: result.mcqs });
 });
 
-app.post("/replace-q", async (req, res) => {
-    const { Id, index } = req.body;
 
-    if (!sessions[Id] || !Array.isArray(sessions[Id].mcqs.mcqs) || index < 0 || index >= sessions[Id].mcqs.mcqs.length) {
-        return res.status(400).json({ error: "Invalid session or index" });
-    }
-
-    console.log(🔄 Replacing question at index ${index}...);
-
-    const newq = (await generateMCQs(1, sessions[Id].mcqs.mcqs[index].question)).mcqs[0];
-    sessions[Id].mcqs.mcqs[index] = newq;
-    
-    console.log("✅ Question replaced successfully.");
-    res.json({ mcqs: sessions[Id].mcqs.mcqs });
-});
 
 const port=process.env.PORT||8080;
 app.listen(port,'0.0.0.0',() =>{ 
