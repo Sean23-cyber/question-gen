@@ -89,36 +89,17 @@ app.post("/get-mcq", (req, res) => {
 app.post("/replace-q", async (req, res) => {
     const { Id, index } = req.body;
 
-    if (!sessions[Id]) {
-        return res.status(400).json({ error: "Invalid session ID" });
+    if (!sessions[Id] || !Array.isArray(sessions[Id].mcqs.mcqs) || index < 0 || index >= sessions[Id].mcqs.mcqs.length) {
+        return res.status(400).json({ error: "Invalid session or index" });
     }
 
-    if (!Array.isArray(sessions[Id].mcqs)) {
-        return res.status(400).json({ error: "MCQ data missing" });
-    }
+    console.log(🔄 Replacing question at index ${index}...);
 
-    if (index < 0 || index >= sessions[Id].mcqs.length) {
-        return res.status(400).json({ error: "Invalid index" });
-    }
-
-    console.log(`Replacing question at index ${index} for session ${Id}...`);
-
-    try {
-        // Request a new question
-        const response = await generateMCQs(1, sessions[Id].mcqs[index].question);
-        if (!response || !response.mcqs || response.mcqs.length === 0) {
-            throw new Error("Failed to generate a valid MCQ");
-        }
-
-        // Replace old question
-        sessions[Id].mcqs[index] = response.mcqs[0];
-        console.log("Question replaced successfully.");
-
-        res.json({ mcqs: sessions[Id].mcqs });
-    } catch (error) {
-        console.error("Error replacing question:", error.message);
-        res.status(500).json({ error: "Failed to replace question. Try again later." });
-    }
+    const newq = (await generateMCQs(1, sessions[Id].mcqs.mcqs[index].question)).mcqs[0];
+    sessions[Id].mcqs.mcqs[index] = newq;
+    
+    console.log("✅ Question replaced successfully.");
+    res.json({ mcqs: sessions[Id].mcqs.mcqs });
 });
 
 const port=process.env.PORT||8080;
