@@ -87,26 +87,18 @@ app.post("/get-mcq", (req, res) => {
 });
 
 app.post("/replace-q",async(req,res)=>{
-    const{Id,Pwd,index}=req.body;
-    const result=validateSession(Id,Pwd,sessions);
-    if(result.error){
-return res.status(403).json({error:result.error});
-}
+    const{mcqs,index}=req.body;
 
-    let mcqs=result.mcqs;
-    if(index<0 || index>=mcqs.length){
-return res.status(400).json({error:"invalid question index"});
+if (!Array.isArray(mcqs) || index < 0 || index >= mcqs.length) {
+        return res.status(400).json({ error: "Invalid MCQ list or index" });
     }
+    console.log(`🔄 Replacing question at index ${index}...`);
+
     const newq=(await generateMCQs(1, "New context for question")).mcqs[0];
      mcqs[index] = newq;
-    sessions[Id].mcqs=mcqs;
+console.log("✅ Question replaced successfully.");
 
-   const filePath = `test/test_${Id}.json`;
-        fs.writeFileSync(filePath, JSON.stringify({ Id, Pwd, mcqs }, null, 4), "utf8");
-      console.log(`✅ Updated MCQs saved to ${filePath}`);
-
-
-    
+   
     res.json({mcqs});
 });
 
