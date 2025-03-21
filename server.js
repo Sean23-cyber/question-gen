@@ -97,15 +97,14 @@ app.post("/replace-q", async (req, res) => {
         }
 
         // Optional password check
-        if (sessions[Id].password && sessions[Id].password !== Pwd) {
-            console.log("❌ Incorrect password for ID:", Id);
-            return res.status(403).json({ error: "Invalid password" });
-        }
+        if (sessions[Id].Pwd && sessions[Id].Pwd !== Pwd) {
+    return res.status(403).json({ error: "Invalid password" });
+}
 
         // Ensure MCQs exist
-        if (!Array.isArray(sessions[Id].mcqs) || sessions[Id].mcqs.length === 0) {
-            return res.status(400).json({ error: "MCQ data missing" });
-        }
+        if (!sessions[Id].mcqs || !Array.isArray(sessions[Id].mcqs.mcqs) || sessions[Id].mcqs.mcqs.length === 0) {
+    return res.status(400).json({ error: "MCQ data missing" });
+}
 
         // Validate index
         if (index < 0 || index >= sessions[Id].mcqs.length) {
@@ -124,10 +123,10 @@ app.post("/replace-q", async (req, res) => {
         }
 
         // Replace the old question
-        sessions[Id].mcqs[index] = response.mcqs[0];
+        sessions[Id].mcqs.mcqs[index] = response.mcqs[0];
         console.log("✅ Question replaced successfully.");
 
-        res.json({ mcqs: sessions[Id].mcqs });
+        res.json({ mcqs: sessions[Id].mcqs.mcqs });
 
     } catch (error) {
         console.error("❌ Error replacing MCQ:", error);
