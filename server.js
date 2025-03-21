@@ -94,7 +94,7 @@ return res.status(403).json({error:result.error});
 }
 
     let mcqs=result.mcqs;
-    if(index<0 || index>=mcqss.lenght){
+    if(index<0 || index>=mcqs.length){
 return res.status(400).json({error:"invalid question index"});
     }
     const newq=(await generateMCQs(1, "New context for question"))[0];
