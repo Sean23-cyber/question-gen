@@ -104,7 +104,7 @@ app.post("/replace-q", async (req, res) => {
             return res.status(400).json({ error: "MCQ data missing" });
         }
 
-        if (index < 0 || index >= sessions[Id].mcqs.mcqs.length) {
+if (index === undefined || index < 0 || index >= sessions[Id].mcqs.mcqs.length) {
             return res.status(400).json({ error: "Invalid index" });
         }
 
