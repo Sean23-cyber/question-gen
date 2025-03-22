@@ -112,42 +112,45 @@ app.post("/replace-q", async (req, res) => {
 
         let attempts = 0;
         const maxAttempts = 5;
+        let delay = 1000; // Initial delay for rate limiting
         let newMCQ = null;
 
         while (attempts < maxAttempts) {
-            const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question);
-            
-            console.log("🔍 Raw Response from Gemini:", response);  
+            try {
+                const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question);
 
-            if (!response || !response.mcqs || !Array.isArray(response.mcqs) || response.mcqs.length === 0) {
-                console.log("❌ Invalid MCQ response. Retrying...");
+                console.log("🔍 Raw Response from Gemini:", response);  
+
+                if (!response || !response.mcqs || !Array.isArray(response.mcqs) || response.mcqs.length === 0) {
+                    console.log("❌ Invalid MCQ response. Retrying...");
+                    throw new Error("Invalid MCQ response");
+                }
+
+                newMCQ = response.mcqs[0];
+
+                if (!newMCQ || typeof newMCQ.question !== "string" || !newMCQ.options) {
+                    console.log("❌ New MCQ is invalid:", newMCQ);
+                    throw new Error("Invalid MCQ format");
+                }
+
+                // **Fix:** Convert options from object to array if necessary
+                if (!Array.isArray(newMCQ.options)) {
+                    newMCQ.options = Object.values(newMCQ.options || {});
+                }
+
+                if (newMCQ.options.length < 2) {
+                    console.log("⚠️ New MCQ has insufficient options. Retrying...");
+                    throw new Error("Insufficient options");
+                }
+
+                break; // Exit loop if MCQ is valid
+
+            } catch (error) {
+                console.log(`❌ Error: ${error.message}. Retrying in ${delay / 1000} seconds...`);
                 attempts++;
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Prevents hitting API too fast
-                continue;
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2; // Exponential backoff
             }
-
-            newMCQ = response.mcqs[0];
-
-            if (!newMCQ || typeof newMCQ.question !== "string" || !newMCQ.options) {
-                console.log("❌ New MCQ is invalid:", newMCQ);
-                attempts++;
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                continue;
-            }
-
-            // **Fix:** Convert options from object to array if necessary
-            if (!Array.isArray(newMCQ.options)) {
-                newMCQ.options = Object.values(newMCQ.options || {});
-            }
-
-            if (newMCQ.options.length < 2) {
-                console.log("⚠️ New MCQ has insufficient options. Retrying...");
-                attempts++;
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                continue;
-            }
-
-            break;
         }
 
         if (attempts >= maxAttempts) {
