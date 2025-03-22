@@ -112,14 +112,19 @@ app.post("/replace-q", async (req, res) => {
 
         let attempts = 0;
         const maxAttempts = 5;
-        let delay = 1000; // Initial delay for rate limiting
+        let delay = 2000; // Initial delay (2s)
         let newMCQ = null;
 
         while (attempts < maxAttempts) {
             try {
-                const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question);
+                // ✅ Add a timeout to prevent hanging requests
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-                console.log("🔍 Raw Response from Gemini:", response);  
+                const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question);
+                clearTimeout(timeout);
+
+                console.log("🔍 Gemini API Response:", response);
 
                 if (!response || !response.mcqs || !Array.isArray(response.mcqs) || response.mcqs.length === 0) {
                     console.log("❌ Invalid MCQ response. Retrying...");
@@ -133,7 +138,7 @@ app.post("/replace-q", async (req, res) => {
                     throw new Error("Invalid MCQ format");
                 }
 
-                // **Fix:** Convert options from object to array if necessary
+                // ✅ Convert options to array if necessary
                 if (!Array.isArray(newMCQ.options)) {
                     newMCQ.options = Object.values(newMCQ.options || {});
                 }
@@ -148,27 +153,27 @@ app.post("/replace-q", async (req, res) => {
             } catch (error) {
                 console.log(`❌ Error: ${error.message}. Retrying in ${delay / 1000} seconds...`);
                 attempts++;
+
+                if (attempts >= maxAttempts) {
+                    console.log("❌ Failed to generate a valid MCQ after multiple attempts.");
+                    return res.status(500).json({ error: "Failed to generate a valid MCQ" });
+                }
+
                 await new Promise(resolve => setTimeout(resolve, delay));
                 delay *= 2; // Exponential backoff
             }
         }
 
-        if (attempts >= maxAttempts) {
-            console.log("❌ Failed to generate a valid MCQ after multiple attempts.");
-            return res.status(500).json({ error: "Failed to generate a valid MCQ" });
-        }
-
         console.log(`✅ Replaced MCQ at index ${index}: "${newMCQ.question}"`);
 
         sessions[Id].mcqs.mcqs[index] = newMCQ;
-        res.json({ mcqs: sessions[Id].mcqs.mcqs });
+        return res.json({ mcqs: sessions[Id].mcqs.mcqs });
 
     } catch (error) {
         console.error("❌ Error replacing MCQ:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
 const port=process.env.PORT||8080;
 app.listen(port,'0.0.0.0',() =>{ 
     console.log(`Server running on port ${port}`);
