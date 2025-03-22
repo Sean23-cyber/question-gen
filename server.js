@@ -121,7 +121,8 @@ if (index === undefined || index < 0 || index >= sessions[Id].mcqs.mcqs.length) 
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-                const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question);
+            const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question + " (Generate a completely different question)");
+
                 clearTimeout(timeout);
 
                 console.log("🔍 Gemini API Response:", response);
