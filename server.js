@@ -60,9 +60,9 @@ expiryTime = 180;
 
 const expiresAt=Date.now()+expiryTime*1000;
 
-sessions[Id]={Pwd,mcqs,expiresAt};
+sessions[mcqs.Id] = { Pwd: mcqs.Pwd, mcqs: mcqs.mcqs, expiresAt };
 
-res.json({Id,Pwd,expiresAt,mcqs: result.mcqs  });
+res.json({Id,Pwd,expiresAt,mcqs: mcqs.mcqs  });
 
 
 
