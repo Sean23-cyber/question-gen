@@ -62,7 +62,7 @@ const expiresAt=Date.now()+expiryTime*1000;
 
 sessions[Id]={Pwd,mcqs,expiresAt};
 
-res.json({Id,Pwd,expiresAt });
+res.json({Id,Pwd,expiresAt,mcqs: result.mcqs  });
 
 
 
