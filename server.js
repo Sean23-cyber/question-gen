@@ -82,8 +82,17 @@ app.post("/get-mcq", (req, res) => {
     if(result.error){
         return res.status(403).json({error:result.error});
     }
+    const currentTime = Date.now();
+    const expiresAt = sessions[Id].expiresAt;
+    const remainingSeconds = Math.floor((expiresAt - currentTime) / 1000);
+    const isActive = currentTime < expiresAt;
 
-    res.json({ mcqs: result.mcqs });
+    res.json({ mcqs: result.mcqs,
+              expiresAt: expiresAt,
+        remainingSeconds: remainingSeconds,
+        isActive: isActive
+             
+             });
 });
 
 app.post("/replace-q", async (req, res) => {
