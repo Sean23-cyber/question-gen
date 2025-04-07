@@ -1,4 +1,4 @@
-const db_routes = require("./routes/db_routes");
+const { router, db } = require('./routes/db_routes');
 const mysql = require('mysql');
 const express=require('express');
 const multer=require('multer');
@@ -14,6 +14,7 @@ const {generateMCQs, validateSession}= require("./request");
 const upload = multer({ dest: "uploads/" });
 
 console.log("generateMCQs:", generateMCQs);
+app.use("/db", router);
 app.use('/api', db_routes);
 
 app.use(express.urlencoded({ extended: true }));
