@@ -11,7 +11,8 @@ const db = mysql.createConnection({
   multipleStatements: true
 });
 
-app.get('/api/test-report/:testId', (req, res) => {
+const router = require('express').Router();
+router.get('/test-report/:testId', (req, res) => {
     const testId = req.params.testId;
     
     db.connect((err) => {
@@ -170,4 +171,7 @@ app.get('/api/test-report/:testId', (req, res) => {
     return Array(numColumns).fill(totalWidth / numColumns);
   }
   
-module.exports=app;
+module.exports = {
+    router: router,
+    db: db
+};
