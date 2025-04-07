@@ -64,6 +64,14 @@ expiryTime = 180;
 const expiresAt=Date.now()+expiryTime*1000;
 
 sessions[mcqs.Id] = { Pwd: mcqs.Pwd, mcqs: mcqs.mcqs, expiresAt };
+    db.query('INSERT INTO Test (test_id) VALUES (?)', [Id], (err) => {
+            if (err) {
+                console.error('❌ Failed to store test ID:', err);
+            
+            } else {
+                console.log('✅ Test ID stored in database:', Id);
+            }
+        });
 
 res.json({Id,Pwd,expiresAt,mcqs: mcqs.mcqs  });
 
