@@ -157,3 +157,4 @@ app.get('/api/test-report/:testId', (req, res) => {
     return Array(numColumns).fill(totalWidth / numColumns);
   }
   
+module.exports=app;
