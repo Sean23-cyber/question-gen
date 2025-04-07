@@ -24,59 +24,57 @@ app.use(express.json());
 
 const sessions = {};
 
-app.post("/generate-mcq",upload.single("file"),async(req,res)=>{
-const upload = multer();
+app.post("/generate-mcq", upload.single("file"), async (req, res) => {
+    const upload = multer();
+    let text = "";
 
-let text="";
+    try {
+        console.log("📢 Received request to generate MCQs.");
+        console.log("🛠️ req.body:", req.body);
 
-try{
+        if (req.file) {
+            const dataBuffer = fs.readFileSync(req.file.path);
+            const pdfData = await pdfParse(dataBuffer);
+            text = pdfData.text;
+        } else if (req.body.text) {
+            text = req.body.text;
+        } else {
+            return res.status(400).json({ error: "No valid input provided." });
+        }
 
-    console.log("📢 Received request to generate MCQs.");
-    console.log("🛠️ req.body:", req.body);
+        console.log("📜 Received text:", text);
+        let numq = parseInt(req.body.numq, 10);
+        if (isNaN(numq) || numq <= 0) {
+            numq = 10;
+        }
+        console.log("🔢 Number of MCQs:", numq);
 
-if (req.file) {
-    const dataBuffer = fs.readFileSync(req.file.path);
-    const pdfData = await pdfParse(dataBuffer);
-    text = pdfData.text;
-} else if (req.body.text) {
-    text = req.body.text;
+        const mcqs = await generateMCQs(numq, text);
+        const Id = mcqs.Id;
+        const Pwd = mcqs.Pwd;
 
-} else {
-    return res.status(400).json({ error: "No valid input provided." });
-}
+        let expiryTime = parseInt(req.body.expiry, 10);
+        if (isNaN(expiryTime) || expiryTime <= 0) {
+            expiryTime = 180; 
+        }
 
-console.log("📜 Received text:", text);
-let numq=parseInt(req.body.numq,10);
-if (isNaN(numq) || numq <= 0) {
-    numq = 10;
-}
-console.log("🔢 Number of MCQs:", numq);
+        const expiresAt = Date.now() + expiryTime * 1000;
+        const startTime = new Date(); // Define startTime here
+        const endTime = new Date(expiresAt); // Define endTime here
 
-
-const mcqs = await generateMCQs(numq,text);
-
-const Id=mcqs.Id;
-const Pwd=mcqs.Pwd;
-
-
-let expiryTime = parseInt(req.body.expiry, 10);
-if (isNaN(expiryTime) || expiryTime <= 0) {
-expiryTime = 180; 
-}
-
-const expiresAt=Date.now()+expiryTime*1000;
-
-sessions[mcqs.Id] = { Pwd: mcqs.Pwd, mcqs: mcqs.mcqs, expiresAt };
-db.query(
+        sessions[mcqs.Id] = { Pwd: mcqs.Pwd, mcqs: mcqs.mcqs, expiresAt };
+        
+        // Store all test data including timings and duration
+        db.query(
             'INSERT INTO Test (test_id, start_time, end_time, duration) VALUES (?, ?, ?, ?)',
-            [Id, now, endTime, expiryTime],
+            [Id, startTime, endTime, expiryTime],
             (err) => {
                 if (err) {
                     console.error('❌ Failed to store test data:', err);
                 } else {
                     console.log('✅ Test data stored in database:', {
                         id: Id,
-                        start: now,
+                        start: startTime,
                         end: endTime,
                         duration: expiryTime
                     });
@@ -84,17 +82,13 @@ db.query(
             }
         );
 
-res.json({Id,Pwd,expiresAt,mcqs: mcqs.mcqs  });
+        // Response remains exactly the same
+        res.json({ Id, Pwd, expiresAt, mcqs: mcqs.mcqs });
 
-
-
-
-} catch (error) {
-res.status(500).json({ error: error.message });
-}
-
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
-
 
 app.post("/get-mcq", (req, res) => {
     const { Id, Pwd } = req.body;
