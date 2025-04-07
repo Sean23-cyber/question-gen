@@ -109,11 +109,11 @@ app.post("/replace-q", async (req, res) => {
             return res.status(403).json({ error: "Invalid password" });
         }
 
-        if (!sessions[Id].mcqs || !Array.isArray(sessions[Id].mcqs.mcqs) || sessions[Id].mcqs.mcqs.length === 0) {
+        if (!sessions[Id].mcqs || !Array.isArray(sessions[Id].mcqs) || sessions[Id].mcqs.length === 0) {
             return res.status(400).json({ error: "MCQ data missing" });
         }
 
-if (index === undefined || index < 0 || index >= sessions[Id].mcqs.mcqs.length) {
+if (index === undefined || index < 0 || index >= sessions[Id].mcqs.length) {
             return res.status(400).json({ error: "Invalid index" });
         }
 
@@ -130,7 +130,7 @@ if (index === undefined || index < 0 || index >= sessions[Id].mcqs.mcqs.length) 
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-            const response = await generateMCQs(1, sessions[Id].mcqs.mcqs[index]?.question + " (Generate a completely different question)");
+            const response = await generateMCQs(1, sessions[Id].mcqs[index]?.question + " (Generate a completely different question)");
 
                 clearTimeout(timeout);
 
@@ -177,7 +177,7 @@ if (index === undefined || index < 0 || index >= sessions[Id].mcqs.mcqs.length) 
         console.log(`✅ Replaced MCQ at index ${index}: "${newMCQ.question}"`);
 
         sessions[Id].mcqs[index] = newMCQ;
-        return res.json({ mcqs: sessions[Id].mcqs.mcqs });
+        return res.json({ mcqs: sessions[Id].mcqs });
 
     } catch (error) {
         console.error("❌ Error replacing MCQ:", error);
