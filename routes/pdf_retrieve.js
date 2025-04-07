@@ -53,6 +53,7 @@ router.get('/test-report/:testId', (req, res) => {
           
           // Generate PDF
           const pdfFilePath = generatePDF(test_details, user_results, testId);
+          console.log(`Pdf file generated at path ${pdfFilePath}`);
           
           // Close database connection
           db.end();
