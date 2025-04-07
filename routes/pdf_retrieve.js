@@ -60,6 +60,7 @@ router.get('/test-report/:testId', (req, res) => {
           
           // Send the PDF file
           res.download(pdfFilePath, `${testId}.pdf`, (err) => {
+            console.log("Filed downloaded");
             if (err) {
               console.error('❌ Error sending PDF:', err);
               return res.status(500).json({ error: 'Error sending PDF' });
