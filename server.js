@@ -12,7 +12,7 @@ const fs=require("fs");
 require("dotenv").config();
 
 
-const app = express();
+
 const {generateMCQs, validateSession}= require("./request");
 const upload = multer({ dest: "uploads/" });
 
