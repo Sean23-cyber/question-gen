@@ -1,6 +1,6 @@
 const { router: dbRouter, db } = require('./routes/db_routes');
 const { router: pdfRouter } = require('./routes/pdf_retrieve');
-const app = express();
+
 const PDFDocument = require("pdfkit");
 const mysql = require('mysql');
 const express=require('express');
@@ -11,8 +11,7 @@ const fs=require("fs");
 
 require("dotenv").config();
 
-
-
+const app = express();
 const {generateMCQs, validateSession}= require("./request");
 const upload = multer({ dest: "uploads/" });
 
