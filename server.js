@@ -15,7 +15,7 @@ const upload = multer({ dest: "uploads/" });
 
 console.log("generateMCQs:", generateMCQs);
 app.use("/db", router);
-app.use('/api', db_routes);
+app.use("/api", router);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
