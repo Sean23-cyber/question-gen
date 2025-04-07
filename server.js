@@ -16,7 +16,7 @@ const {generateMCQs, validateSession}= require("./request");
 const upload = multer({ dest: "uploads/" });
 
 console.log("generateMCQs:", generateMCQs);
-app.use("/api", dbRouter);
+app.use("/db", dbRouter);
 app.use("/api", pdfRouter);
 
 app.use(express.urlencoded({ extended: true }));
