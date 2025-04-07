@@ -1,3 +1,16 @@
+const mysql = require("mysql");
+const fs = require("fs");
+const PDFDocument = require("pdfkit");
+
+// Database connection
+const db = mysql.createConnection({
+  host: 'database-surprise.c3eiy4wi8u5e.ap-south-1.rds.amazonaws.com',
+  user: 'admin',
+  password: 'ffmL87LtJgD1IwON3pDB',
+  port: 3306,
+  multipleStatements: true
+});
+
 app.get('/api/test-report/:testId', (req, res) => {
     const testId = req.params.testId;
     
