@@ -176,7 +176,7 @@ if (index === undefined || index < 0 || index >= sessions[Id].mcqs.mcqs.length) 
 
         console.log(`✅ Replaced MCQ at index ${index}: "${newMCQ.question}"`);
 
-        sessions[Id].mcqs.mcqs[index] = newMCQ;
+        sessions[Id].mcqs[index] = newMCQ;
         return res.json({ mcqs: sessions[Id].mcqs.mcqs });
 
     } catch (error) {
