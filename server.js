@@ -1,4 +1,4 @@
-const dbRoutes = require("./routes/db_routes");
+const db_routes = require("./routes/db_routes");
 
 const express=require('express');
 const multer=require('multer');
