@@ -1,5 +1,5 @@
-const { router, db } = require('./routes/db_routes');
-const {router,db}=require('./routes/pdf_retrieve.js');
+const { router: dbRouter, db } = require('./routes/db_routes');
+const { router: pdfRouter } = require('./routes/pdf_retrieve');
 const app = express();
 const PDFDocument = require("pdfkit");
 const mysql = require('mysql');
@@ -17,8 +17,8 @@ const {generateMCQs, validateSession}= require("./request");
 const upload = multer({ dest: "uploads/" });
 
 console.log("generateMCQs:", generateMCQs);
-app.use("/db", router);
-app.use("/api", router);
+app.use("/db", dbRouter);
+app.use("/api", pdfRouter);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
