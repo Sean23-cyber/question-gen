@@ -56,9 +56,10 @@ router.get('/test-report/:testId', (req, res) => {
           
           // Close database connection
           db.end();
+          console.log("Database connection in rout retirieve js ended");
           
           // Send the PDF file
-          res.download(pdfFilePath, `test_report_${testId}.pdf`, (err) => {
+          res.download(pdfFilePath, `${testId}.pdf`, (err) => {
             if (err) {
               console.error('❌ Error sending PDF:', err);
               return res.status(500).json({ error: 'Error sending PDF' });
