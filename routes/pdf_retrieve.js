@@ -8,6 +8,7 @@ const db = mysql.createConnection({
   user: 'admin',
   password: 'ffmL87LtJgD1IwON3pDB',
   port: 3306,
+  database : 'db_surprise',
   multipleStatements: true
 });
 
