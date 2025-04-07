@@ -663,4 +663,7 @@ router.get('/search/users', (req, res) => {
   });
 });
 
-module.exports = router;
+module.exports = {
+    router: router,
+    db: db  // Export the db connection along with the router
+};
