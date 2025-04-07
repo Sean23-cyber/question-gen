@@ -1,5 +1,5 @@
 const { router, db } = require('./routes/db_routes');
-const pdf_retrieve=require('./routes/pdf_retrieve.js');
+const {router,db}=require('./routes/pdf_retrieve.js');
 const app = express();
 const PDFDocument = require("pdfkit");
 const mysql = require('mysql');
