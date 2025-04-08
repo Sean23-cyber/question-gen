@@ -25,7 +25,6 @@ app.use(express.json());
 const sessions = {};
 
 app.post("/generate-mcq", upload.single("file"), async (req, res) => {
-    const upload = multer();
     let text = "";
 
     try {
@@ -59,32 +58,53 @@ app.post("/generate-mcq", upload.single("file"), async (req, res) => {
         }
 
         const expiresAt = Date.now() + expiryTime * 1000;
-        const startTime = new Date(); // Define startTime here
-        const endTime = new Date(expiresAt); // Define endTime here
 
-        sessions[mcqs.Id] = { Pwd: mcqs.Pwd, mcqs: mcqs.mcqs, expiresAt };
+        // 🆕 Get test title and creator uid from body, with defaults
+        const testTitle = req.body.test_title || "Untitled Test";
+        const creatorUid = req.body.creator_uid || "unknown_creator";
+
+        // 💾 Save everything to sessions
+        sessions[Id] = {
+            Pwd: mcqs.Pwd,
+            mcqs: mcqs.mcqs,
+            expiresAt,
+            testTitle,
+            creatorUid
+        };
+
         
         // Store all test data including timings and duration
         db.query(
-            'INSERT INTO Test (test_id, start_time, end_time, duration) VALUES (?, ?, ?, ?)',
-            [Id, startTime, endTime, expiryTime],
+            `INSERT INTO Test 
+                (test_id, creator_uid, test_password, start_time, end_time, duration, test_title, test_generated) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [Id, creatorUid, Pwd, startTime, endTime, expiryTime, testTitle, testGenerated],
             (err) => {
                 if (err) {
                     console.error('❌ Failed to store test data:', err);
                 } else {
                     console.log('✅ Test data stored in database:', {
-                        id: Id,
-                        start: startTime,
-                        end: endTime,
-                        duration: expiryTime
+                        test_id: Id,
+                        creator_uid: creatorUid,
+                        test_password: Pwd,
+                        start_time: startTime,
+                        end_time: endTime,
+                        duration: expiryTime,
+                        test_title: testTitle
                     });
                 }
             }
         );
 
         // Response remains exactly the same
-        res.json({ Id, Pwd, expiresAt, mcqs: mcqs.mcqs });
-
+        res.json({
+            Id,
+            Pwd,
+            expiresAt,
+            mcqs: mcqs.mcqs,
+            testTitle,
+            creatorUid
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
