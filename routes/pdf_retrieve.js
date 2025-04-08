@@ -210,5 +210,4 @@ function calculateColumnWidths(data, totalWidth) {
 
 module.exports = {
     router: router,
-    db: db
 };
