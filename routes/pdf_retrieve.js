@@ -11,7 +11,7 @@ const dbConfig = {
   port: 3306,
   database : 'db_surprise',
   multipleStatements: true
-});
+};
 
 const router = require('express').Router();
 router.get('/test-report/:testId', (req, res) => {
