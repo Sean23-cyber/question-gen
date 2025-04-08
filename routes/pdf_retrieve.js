@@ -36,7 +36,7 @@ router.get('/test-report/:testId', (req, res) => {
     
     // First query: Get test details
     const query_test_details = `
-    SELECT * FROM Test WHERE test_id = ?;
+    SELECT test_title, test_id, test_password, start_time, end_time, duration, FROM Test WHERE test_id = ?;
     `;
     
     db.query(query_test_details, [testId], (err, test_details) => {
