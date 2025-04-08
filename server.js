@@ -72,7 +72,9 @@ app.post("/generate-mcq", upload.single("file"), async (req, res) => {
             creatorUid
         };
 
-        
+        const startTime = new Date().toISOString();
+const endTime = new Date(Date.now() + expiryTime * 1000).toISOString();
+        const testGenerated = JSON.stringify(mcqs.mcqs);
         // Store all test data including timings and duration
         db.query(
             `INSERT INTO Test 
