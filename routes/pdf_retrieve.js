@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
+const path = require('path');
 
 // Database connection
 const db = mysql.createConnection({
