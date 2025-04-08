@@ -4,7 +4,7 @@ const PDFDocument = require("pdfkit");
 const path = require('path');
 
 // Database connection
-const db = mysql.createConnection({
+const dbConfig = {
   host: 'database-surprise.c3eiy4wi8u5e.ap-south-1.rds.amazonaws.com',
   user: 'admin',
   password: 'ffmL87LtJgD1IwON3pDB',
@@ -23,7 +23,7 @@ router.get('/test-report/:testId', (req, res) => {
   }
   
   // Create database connection
-  const db = mysql.createConnection(db);
+  const db = mysql.createConnection(dbConfig);
   
   // Connect to database
   db.connect((err) => {
