@@ -12,6 +12,7 @@ const fs=require("fs");
 require("dotenv").config();
 
 const app = express();
+app.use(express.json());
 const {generateMCQs, validateSession}= require("./request");
 const upload = multer({ dest: "uploads/" });
 
@@ -20,7 +21,7 @@ app.use("/api", dbRouter);
 app.use("/api", pdfRouter);
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+
 
 const sessions = {};
 
