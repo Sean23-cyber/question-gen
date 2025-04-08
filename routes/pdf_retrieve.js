@@ -18,7 +18,7 @@ router.get('/test-report/:testId', (req, res) => {
     const testId = req.params.testId;
     
     // Validate test ID
-  if (!testId || isNaN(parseInt(testId))) {
+  if (!testId || isNaN((testId))) {
     return res.status(400).json({ error: 'Invalid test ID' });
   }
   
