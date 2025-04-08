@@ -23,7 +23,7 @@ db.connect((err) => {
   }
   console.log('✅ Connected to MySQL');
 
-  const createDbAndTables = `
+ const createDbAndTables = `
     CREATE DATABASE IF NOT EXISTS db_surprise;
     USE db_surprise;
 
@@ -38,7 +38,7 @@ db.connect((err) => {
     );
 
     CREATE TABLE IF NOT EXISTS Test (
-      test_id VARCHAR(8),
+      test_id VARCHAR(8) PRIMARY KEY,
       creator_uid INT,
       test_password VARCHAR(255),
       start_time DATETIME,
@@ -51,7 +51,7 @@ db.connect((err) => {
 
     CREATE TABLE IF NOT EXISTS HistoryCreated (
       creator_id INT,
-      test_id INT,
+      test_id VARCHAR(8),
       created_time DATETIME,
       total_participants INT,
       PRIMARY KEY (test_id),
@@ -61,7 +61,7 @@ db.connect((err) => {
 
     CREATE TABLE IF NOT EXISTS HistoryJoined (
       user_uid INT,
-      test_id INT,
+      test_id VARCHAR(8),
       joined_time DATETIME,
       score INT,
       test_report TEXT,
