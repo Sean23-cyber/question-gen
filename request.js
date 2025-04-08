@@ -74,8 +74,8 @@ Each MCQ should:
         try {
             const mcqs = JSON.parse(mcqString);
 
-            const Id = parseInt(crypto.randomBytes(4).toString("hex"), 16);
-const Pwd = parseInt(crypto.randomBytes(2).toString("hex"), 16);
+         const Id=crypto.randomBytes(4).toString("hex");
+            const Pwd=crypto.randomBytes(2).toString("hex");
             
 
             const output = {
