@@ -255,6 +255,20 @@ router.get('/tests', (req, res) => {
     if (err) {
       return handleDatabaseError(res, err, 'fetching tests');
     }
+
+    results.forEach(row => {
+      if (typeof row.test_generated === 'string') {
+        try {
+          row.test_generated = JSON.parse(row.test_generated);
+        } catch (err) {
+          console.error("⚠️ Failed to parse test_generated for test_id:", row.test_id);
+          row.test_generated = []; // fallback to empty array if parse fails
+        }
+      }
+    });
+
+
+
     res.json(results);
   });
 });
