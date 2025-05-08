@@ -33,7 +33,7 @@ Each MCQ should:
 
     try {
         const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}`, 
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, 
             {
                
                contents: [{ role: "user", parts: [{ text: prompt }] }]
