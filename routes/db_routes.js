@@ -456,7 +456,7 @@ router.post('/tests/:testId/validate-password', (req, res) => {
 
 // Record a test creation history
 router.post('/history/created', (req, res) => {
-  const { creator_id, test_id, joined_time, score, performance_status } = req.body;
+  const { creator_id, test_id, created_time, total_participants } = req.body;
   
   if (!creator_id || !test_id) {
     return res.status(400).json({ error: 'Required fields missing: creator_id and test_id are mandatory' });
@@ -464,11 +464,11 @@ router.post('/history/created', (req, res) => {
   
   const query = `
     INSERT INTO HistoryCreated 
-    (creator_id, test_id, joined_time, score, performance_status) 
+    (creator_id, test_id, created_time, total_participants)
     VALUES (?, ?, ?, ?, ?)
   `;
   
-  db.query(query, [creator_id, test_id, joined_time, score, performance_status], (err, result) => {
+  db.query(query, [creator_id, test_id, created_time, total_participants], (err, result) => {
     if (err) {
       return handleDatabaseError(res, err, 'recording creation history');
     }
@@ -479,7 +479,7 @@ router.post('/history/created', (req, res) => {
 
 // Record a test join history
 router.post('/history/joined', (req, res) => {
-  const { user_uid, test_id, created_time, total_participants, test_report } = req.body;
+  const { uid, test_id, joined_time, marks_obtained } = req.body;
   
   if (!user_uid || !test_id) {
     return res.status(400).json({ error: 'Required fields missing: user_uid and test_id are mandatory' });
@@ -487,11 +487,11 @@ router.post('/history/joined', (req, res) => {
   
   const query = `
     INSERT INTO HistoryJoined 
-    (user_uid, test_id, created_time, total_participants, test_report) 
+    (uid, test_id, joined_time, marks_obtained)  
     VALUES (?, ?, ?, ?, ?)
   `;
   
-  db.query(query, [user_uid, test_id, created_time, total_participants, test_report], (err, result) => {
+  db.query(query, [uid, test_id, joined_time, marks_obtained], (err, result) => {
     if (err) {
       return handleDatabaseError(res, err, 'recording join history');
     }
