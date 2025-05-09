@@ -465,7 +465,7 @@ router.post('/history/created', (req, res) => {
   const query = `
     INSERT INTO HistoryCreated 
     (creator_id, test_id, created_time, total_participants)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?)
   `;
   
   db.query(query, [creator_id, test_id, created_time, total_participants], (err, result) => {
