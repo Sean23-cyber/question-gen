@@ -481,7 +481,7 @@ router.post('/history/created', (req, res) => {
 router.post('/history/joined', (req, res) => {
   const { uid, test_id, joined_time, marks_obtained } = req.body;
   
-  if (!user_uid || !test_id) {
+  if (!uid || !test_id) {
     return res.status(400).json({ error: 'Required fields missing: user_uid and test_id are mandatory' });
   }
   
